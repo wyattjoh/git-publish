@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -8,9 +9,13 @@ import (
 )
 
 func main() {
+	noFetch := flag.Bool("no-fetch", false, "disable fetching the remote")
+
+	flag.Parse()
+
 	remoteName := "origin"
-	if len(os.Args) > 1 {
-		remoteName = os.Args[1]
+	if flag.NArg() == 1 {
+		remoteName = flag.Arg(0)
 	}
 
 	cwd, err := os.Getwd()
@@ -37,11 +42,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Update remotes.
-	fmt.Println("$ git fetch")
-	if err := exec.Command("git", "fetch", remoteName).Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "can't fetch remote %s: %v\n", remoteName, err)
-		os.Exit(1)
+	if !*noFetch {
+		// Update remotes.
+		fmt.Println("$ git fetch")
+		if err := exec.Command("git", "fetch", remoteName).Run(); err != nil {
+			fmt.Fprintf(os.Stderr, "can't fetch remote %s: %v\n", remoteName, err)
+			os.Exit(1)
+		}
 	}
 
 	// Get the current branch name.
