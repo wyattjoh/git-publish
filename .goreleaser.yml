@@ -28,7 +28,7 @@ brew:
     name: homebrew-stable
   folder: Formula
   homepage:  https://github.com/wyattjoh/git-publish
-  description: Cloudflare Dynamic DNS Updater
+  description: git branch publisher
   test: |
     system "#{bin}/git-publish -v"
 
