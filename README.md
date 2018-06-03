@@ -1,5 +1,7 @@
 # git-publish
 
+[![Build Status](https://travis-ci.org/wyattjoh/git-publish.svg?branch=master)](https://travis-ci.org/wyattjoh/git-publish)
+
 This is a small tool to help out with frequent work with extra branches.
 
 It essentially mirrors the `git push --set-upstream origin $current_branch`.
