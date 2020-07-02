@@ -1,0 +1,10 @@
+[linters-settings]
+
+  [linters-settings.misspell]
+    locale = "US"
+
+[linters]
+  enable-all = true
+  disable = [
+    "funlen"
+  ]

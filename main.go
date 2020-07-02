@@ -32,11 +32,13 @@ func main() {
 	}
 
 	var foundRemote bool
+
 	for _, remote := range strings.Split(strings.TrimSpace(string(out)), "\n") {
 		if remote == remoteName {
 			foundRemote = true
 		}
 	}
+
 	if !foundRemote {
 		fmt.Fprintf(os.Stderr, "can't find the remote %s in %s\n", remoteName, cwd)
 		os.Exit(1)
@@ -45,6 +47,7 @@ func main() {
 	if !*noFetch {
 		// Update remotes.
 		fmt.Println("$ git fetch")
+
 		if err := exec.Command("git", "fetch", remoteName).Run(); err != nil {
 			fmt.Fprintf(os.Stderr, "can't fetch remote %s: %v\n", remoteName, err)
 			os.Exit(1)
@@ -53,6 +56,7 @@ func main() {
 
 	// Get the current branch name.
 	fmt.Println("$ git rev-parse --abbrev-ref HEAD")
+
 	out, err = exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "can't get current branch: %v\n", err)
