@@ -1,6 +1,6 @@
 # git-publish
 
-[![Build Status](https://travis-ci.org/wyattjoh/git-publish.svg?branch=master)](https://travis-ci.org/wyattjoh/git-publish)
+![Test](https://github.com/wyattjoh/git-publish/workflows/Test/badge.svg)
 
 This is a small tool to help out with frequent work with extra branches.
 
@@ -20,7 +20,9 @@ Download pre-compiled binary on the [Releases Page](https://github.com/wyattjoh/
 
 ### Installation Via Homebrew
 
+```
 brew install wyattjoh/stable/git-publish
+```
 
 ## Usage
 
