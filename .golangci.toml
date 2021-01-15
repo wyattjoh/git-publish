@@ -6,5 +6,6 @@
 [linters]
   enable-all = true
   disable = [
-    "funlen"
+    "funlen",
+    "forbidigo"
   ]
