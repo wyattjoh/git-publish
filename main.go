@@ -6,12 +6,20 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/pkg/errors"
+	"github.com/urfave/cli/v2"
 )
 
-func main() {
-	noFetch := flag.Bool("no-fetch", false, "disable fetching the remote")
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
-	flag.Parse()
+// Action will perform the publish operation.
+func Action(c *cli.Context) error {
+	noFetch := c.Bool("no-fetch")
 
 	remoteName := "origin"
 	if flag.NArg() == 1 {
@@ -20,15 +28,13 @@ func main() {
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "can't get the current working directory: %v\n", err)
-		os.Exit(1)
+		return errors.Wrap(err, "can't get the current working directory")
 	}
 
 	// Validate that the remote exists.
 	out, err := exec.Command("git", "remote").Output()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "can't validate the remote: %v\n", err)
-		os.Exit(1)
+		return errors.Wrap(err, "can't validate that the remote exists")
 	}
 
 	var foundRemote bool
@@ -40,17 +46,15 @@ func main() {
 	}
 
 	if !foundRemote {
-		fmt.Fprintf(os.Stderr, "can't find the remote %s in %s\n", remoteName, cwd)
-		os.Exit(1)
+		return errors.Errorf("can't find the remote %s in %s", remoteName, cwd)
 	}
 
-	if !*noFetch {
+	if !noFetch {
 		// Update remotes.
 		fmt.Println("$ git fetch")
 
 		if err := exec.Command("git", "fetch", remoteName).Run(); err != nil {
-			fmt.Fprintf(os.Stderr, "can't fetch remote %s: %v\n", remoteName, err)
-			os.Exit(1)
+			return errors.Wrap(err, "can't fetch remote")
 		}
 	}
 
@@ -59,8 +63,7 @@ func main() {
 
 	out, err = exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "can't get current branch: %v\n", err)
-		os.Exit(1)
+		return errors.Wrap(err, "can't get the current branch")
 	}
 
 	// Strip off the extra space and newlines.
@@ -75,7 +78,26 @@ func main() {
 
 	// Run it.
 	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "can't push upstream: %v\n", err)
+		return errors.Wrap(err, "can't push upstream")
+	}
+
+	return nil
+}
+
+func main() {
+	app := cli.NewApp()
+	app.Name = "git-publish"
+	app.Version = fmt.Sprintf("%v, commit %v, built at %v", version, commit, date)
+	app.Flags = []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "no-fetch",
+			Usage: "disable featching the remote",
+		},
+	}
+	app.Action = Action
+
+	if err := app.Run(os.Args); err != nil {
+		fmt.Fprintf(os.Stderr, "can't publish to origin: %v\n", err)
 		os.Exit(1)
 	}
 }

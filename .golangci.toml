@@ -7,5 +7,7 @@
   enable-all = true
   disable = [
     "funlen",
-    "forbidigo"
+    "forbidigo",
+    "gochecknoglobals",
+    "exhaustivestruct"
   ]
